@@ -1,8 +1,7 @@
-// firebase.js - Firebase + Firestore Setup
+// firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Tumhara Asli Firebase Config - committee-app-cbd9b
 const firebaseConfig = {
   apiKey: "AIzaSyA_OMaPxkVd5f9DhhY_b9yinapi-xK3QUw",
   authDomain: "committee-app-cbd9b.firebaseapp.com",
@@ -14,8 +13,5 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-window.db = db;
-window.fb = { doc, setDoc, getDoc, onSnapshot, collection, addDoc, updateDoc, deleteDoc };
-window.firebaseReady = true;
-console.log("✅ Firebase Connected!");
+window.fb = { db, doc, setDoc, getDoc };
+console.log("Firebase Connected");
