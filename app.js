@@ -1,330 +1,287 @@
-// ===== COMMITTEE APP - COMPLETE app.js =====
-// Khalid-1041 Version - Auto Committee + Withdraw Lock + Firebase
-
+// ===== COMMITTEE APP - COMPLETE FINAL app.js =====
 let members = [];
-let calendar = {}; // { "Bilal": { "Month-1": "paid", ... } }
-let drawBoxes = []; // { winner, month, date }
+let calendar = {};
+let drawBoxes = [];
 let history = [];
 let proofs = [];
 let currentUser = null;
 let isAdmin = false;
+let editingMemberId = null;
 
-// ===== 1. LOAD DATA =====
+// ===== LOAD =====
 function loadLocal(){
   try{
     members = JSON.parse(localStorage.getItem("members") || "[]");
     calendar = JSON.parse(localStorage.getItem("calendar") || "{}");
     drawBoxes = JSON.parse(localStorage.getItem("drawBoxes") || "[]");
     history = JSON.parse(localStorage.getItem("history") || "[]");
-    proofs = JSON.parse(localStorage.getItem("proofs") || "[]");
-  }catch(e){ members=[]; calendar={}; drawBoxes=[]; history=[]; proofs=[]; }
+  }catch(e){ members=[]; calendar={}; drawBoxes=[]; history=[]; }
 }
-
-// Pehli dafa khali rakho - Dummy data nahi bharna
 if(localStorage.getItem("firstTime") !== "done"){
-  members = [];
-  calendar = {};
-  drawBoxes = [];
-  history = [];
-  proofs = [];
-  localStorage.setItem("firstTime", "done");
-  localStorage.setItem("members", "[]");
-  localStorage.setItem("calendar", "{}");
-  localStorage.setItem("drawBoxes", "[]");
-  localStorage.setItem("history", "[]");
-} else {
-  loadLocal();
-}
+  members=[]; calendar={}; drawBoxes=[]; history=[]; proofs=[];
+  localStorage.setItem("firstTime","done");
+  localStorage.setItem("members","[]");
+} else { loadLocal(); }
 
-// ===== 2. SAVE DATA - Local + Firebase =====
+// ===== SAVE =====
 function save(){
   localStorage.setItem("members", JSON.stringify(members));
   localStorage.setItem("calendar", JSON.stringify(calendar));
   localStorage.setItem("drawBoxes", JSON.stringify(drawBoxes));
   localStorage.setItem("history", JSON.stringify(history));
-  localStorage.setItem("proofs", JSON.stringify(proofs));
   saveToFirebase();
   render();
 }
-
 async function saveToFirebase(){
   try{
-    if(window.fb && window.fb.db && window.fb.setDoc && window.fb.doc){
-      await window.fb.setDoc(window.fb.doc(window.fb.db, "committee", "members"), {
-        members: members,
-        calendar: calendar,
-        drawBoxes: drawBoxes,
-        history: history,
-        proofs: proofs,
+    if(window.fb && window.fb.db){
+      await window.fb.setDoc(window.fb.doc(window.fb.db,"committee","members"),{
+        members, calendar, drawBoxes, history,
         updatedAt: new Date().toString(),
         totalMonths: getTotalMonths()
       });
-      console.log("✅ Firebase me save ho gaya");
     }
-  }catch(e){ console.log("Firebase save error:", e.message); }
+  }catch(e){ console.log(e.message); }
 }
-
 async function loadFromFirebase(){
   try{
-    if(window.fb && window.fb.db && window.fb.getDoc && window.fb.doc){
-      let snap = await window.fb.getDoc(window.fb.doc(window.fb.db, "committee", "members"));
+    if(window.fb && window.fb.db){
+      let snap = await window.fb.getDoc(window.fb.doc(window.fb.db,"committee","members"));
       if(snap.exists()){
         let d = snap.data();
-        if(d.members) members = d.members;
-        if(d.calendar) calendar = d.calendar;
-        if(d.drawBoxes) drawBoxes = d.drawBoxes;
-        if(d.history) history = d.history;
-        if(d.proofs) proofs = d.proofs;
-        localStorage.setItem("members", JSON.stringify(members));
-        localStorage.setItem("calendar", JSON.stringify(calendar));
-        localStorage.setItem("drawBoxes", JSON.stringify(drawBoxes));
-        localStorage.setItem("history", JSON.stringify(history));
+        if(d.members) members=d.members;
+        if(d.calendar) calendar=d.calendar;
+        if(d.drawBoxes) drawBoxes=d.drawBoxes;
+        if(d.history) history=d.history;
         render();
-        console.log("✅ Firebase se load ho gaya");
       }
     }
-  }catch(e){ console.log("Firebase load error:", e.message); }
+  }catch(e){ console.log(e.message); }
 }
+setTimeout(loadFromFirebase,1500);
 
-// Firebase ready hone ke baad load karo
-setTimeout(loadFromFirebase, 1500);
-
-// ===== 3. AUTO COMMITTEE - JITNE MEMBER UTNE MAHINE =====
-function getTotalMonths(){
-  return members.length;
-}
-
+// ===== AUTO COMMITTEE =====
+function getTotalMonths(){ return members.length; }
 function getCommitteeInfo(){
-  let total = getTotalMonths();
-  return `📊 Total Member: ${total} | Committee: ${total} Mahine ki | Har Mahine 1 Draw`;
+  let t = getTotalMonths();
+  return `📊 Total Member: ${t} | Committee: ${t} Mahine ki | Har Mahine 1 Draw`;
+}
+function getPaidCount(name){
+  if(!calendar[name]) return 0;
+  return Object.values(calendar[name]).filter(v=>v==="paid").length;
 }
 
-// ===== 4. LOGIN =====
-function loginAdmin(pass){
-  if(pass === "1234"){
-    isAdmin = true;
-    currentUser = "Admin";
+// ===== LOGIN =====
+function showLogin(type){
+  document.getElementById('adminLogin').classList.toggle('hidden', type!=='admin');
+  document.getElementById('memberLogin').classList.toggle('hidden', type!=='member');
+}
+function doAdminLogin(){
+  let p = document.getElementById('adminPass').value;
+  if(p==="1234"){
+    isAdmin=true; currentUser="Admin";
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainScreen').classList.remove('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    document.getElementById('welcomeText').innerText="Welcome Admin";
+    document.getElementById('roleText').innerText="Aap Admin hain - Sab kuch control kar sakte hain";
     render();
-    return true;
-  }
-  alert("Ghalat Password!");
-  return false;
+  } else alert("Ghalat Password! 1234 likhen");
 }
-
-function loginMember(name, phone){
-  let m = members.find(x => x.name.toLowerCase() === name.toLowerCase());
-  if(!m){ alert("Member nahi mila! Pehle Admin se Add karwayen"); return false; }
-  // Phone match ho to bhi theek, warna sirf naam se login kar lo
-  isAdmin = false;
-  currentUser = m.name;
-  render();
-  renderMemberView();
-  return true;
-}
-
-function logout(){
-  currentUser = null;
-  isAdmin = false;
+function doMemberLogin(){
+  let name = document.getElementById('memberNameInput').value.trim();
+  if(!name){ alert("Naam likhen"); return; }
+  let m = members.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!m){ alert("Member nahi mila! Pehle Admin se Add karwayen"); return; }
+  isAdmin=false; currentUser=m.name;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('mainScreen').classList.remove('hidden');
+  document.getElementById('memberPanel').classList.remove('hidden');
+  document.getElementById('welcomeText').innerText="Welcome "+m.name;
+  document.getElementById('roleText').innerText="Aap Member hain";
   render();
 }
+function doLogout(){
+  currentUser=null; isAdmin=false;
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('mainScreen').classList.add('hidden');
+  document.getElementById('adminPanel').classList.add('hidden');
+  document.getElementById('memberPanel').classList.add('hidden');
+  render();
+}
 
-// ===== 5. ADD / DELETE MEMBER =====
-function addMember(name, phone, monthlyAmount){
-  if(!name) { alert("Naam likhen"); return; }
-  if(members.find(m => m.name.toLowerCase() === name.toLowerCase())){
-    alert("Ye member pehle se hai!"); return;
-  }
-  let newMember = {
-    id: Date.now(),
-    name: name.trim(),
-    phone: phone || "",
-    amount: monthlyAmount || 0,
-    joinedDate: new Date().toLocaleDateString(),
-    totalPaid: 0,
-    totalMonthsPaid: 0
-  };
-  members.push(newMember);
-  calendar[newMember.name] = {};
-  history.push({ type: "add", text: `${newMember.name} ko add kiya gaya`, date: new Date().toLocaleString() });
-  console.log("Member add hua, ab committee: " + getTotalMonths() + " mahine ki ho gayi");
+// ===== ADD / EDIT / DELETE =====
+function doAddMember(){
+  let name=document.getElementById('newName').value.trim();
+  let phone=document.getElementById('newPhone').value.trim();
+  let amount=document.getElementById('newAmount').value;
+  if(!name){ alert("Naam likhen"); return; }
+  if(members.find(m=>m.name.toLowerCase()===name.toLowerCase())){ alert("Ye member pehle se hai!"); return; }
+  let nm={ id: Date.now(), name, phone, amount: parseInt(amount)||0, joinedDate: new Date().toLocaleDateString() };
+  members.push(nm);
+  calendar[nm.name]={};
+  history.push({type:"add", text:`${nm.name} ko add kiya gaya`, date:new Date().toLocaleString()});
+  document.getElementById('newName').value=""; document.getElementById('newPhone').value=""; document.getElementById('newAmount').value="";
   save();
-  alert(newMember.name + " Add ho gaya! Ab Committee " + getTotalMonths() + " Mahine ki hai");
+  alert(nm.name+" Add ho gaya! Ab Committee "+getTotalMonths()+" Mahine ki hai");
 }
-
+function editMember(id){
+  let m=members.find(x=>x.id===id);
+  if(!m) return;
+  editingMemberId=m.id;
+  document.getElementById('editName').value=m.name;
+  document.getElementById('editPhone').value=m.phone||"";
+  document.getElementById('editAmount').value=m.amount||"";
+  document.getElementById('editBox').style.display='block';
+}
+function doSaveEdit(){
+  let m=members.find(x=>x.id===editingMemberId);
+  if(!m) return;
+  let oldName=m.name;
+  let newName=document.getElementById('editName').value.trim();
+  let newPhone=document.getElementById('editPhone').value.trim();
+  let newAmount=document.getElementById('editAmount').value;
+  if(!newName){ alert("Naam khali nahi ho sakta"); return; }
+  if(oldName!==newName){
+    if(calendar[oldName]){ calendar[newName]=calendar[oldName]; delete calendar[oldName]; }
+    drawBoxes.forEach(b=>{ if(b.winner===oldName) b.winner=newName; });
+  }
+  m.name=newName; m.phone=newPhone; m.amount=parseInt(newAmount)||0;
+  history.push({type:"edit", text:`${oldName} ko Edit karke ${newName} kar diya`, date:new Date().toLocaleString()});
+  editingMemberId=null;
+  document.getElementById('editBox').style.display='none';
+  save();
+  alert("✅ "+newName+" Update ho gaya!");
+}
+function closeEdit(){ editingMemberId=null; document.getElementById('editBox').style.display='none'; }
 function deleteMember(name){
-  if(!confirm(name + " ko delete karna hai?")) return;
-  members = members.filter(m => m.name !== name);
+  if(!confirm(name+" ko delete karna hai?")) return;
+  members=members.filter(m=>m.name!==name);
   delete calendar[name];
-  drawBoxes = drawBoxes.filter(b => b.winner !== name);
-  history.push({ type: "delete", text: `${name} ko delete kiya gaya`, date: new Date().toLocaleString() });
-  console.log("Member delete hua, ab committee: " + getTotalMonths() + " mahine ki ho gayi");
+  drawBoxes=drawBoxes.filter(b=>b.winner!==name);
+  history.push({type:"delete", text:`${name} ko delete kiya gaya`, date:new Date().toLocaleString()});
   save();
 }
-
-function clearAllData(){
-  if(!confirm("SARA DATA DELETE karna hai? Ye wapas nahi aayega!")) return;
-  members = []; calendar = {}; drawBoxes = []; history = []; proofs = [];
-  localStorage.clear();
-  localStorage.setItem("firstTime", "done");
-  save();
-  alert("Sara Dummy Data Delete ho gaya, App ab khali hai");
+function clearAll(){
+  if(!confirm("SARA DATA DELETE karna hai?")) return;
+  members=[]; calendar={}; drawBoxes=[]; history=[];
+  localStorage.clear(); localStorage.setItem("firstTime","done");
+  save(); alert("Sara Data Clear ho gaya");
 }
 
-// ===== 6. PAYMENT - PAID / UNPAID =====
+// ===== PAYMENT =====
 function togglePaid(memberName, monthKey){
-  if(!calendar[memberName]) calendar[memberName] = {};
-  if(calendar[memberName][monthKey] === "paid"){
-    calendar[memberName][monthKey] = "unpaid";
-  } else {
-    calendar[memberName][monthKey] = "paid";
-    history.push({ type: "paid", text: `${memberName} ne ${monthKey} ki qist jama kar di`, date: new Date().toLocaleString() });
-  }
+  if(!calendar[memberName]) calendar[memberName]={};
+  if(calendar[memberName][monthKey]==="paid"){ calendar[memberName][monthKey]="unpaid"; }
+  else { calendar[memberName][monthKey]="paid"; history.push({type:"paid", text:`${memberName} ne ${monthKey} ki qist jama ki`, date:new Date().toLocaleString()}); }
   save();
 }
 
-function getPaidCount(memberName){
-  if(!calendar[memberName]) return 0;
-  return Object.values(calendar[memberName]).filter(v => v === "paid").length;
-}
-
-// ===== 7. DRAW =====
-function doDraw(monthKey){
-  if(members.length === 0){ alert("Pehle member add karen"); return; }
-  // Jo pehle jeet chuke hain unko dobara nahi nikalna
-  let alreadyWon = drawBoxes.map(b => b.winner);
-  let eligible = members.filter(m => !alreadyWon.includes(m.name));
-  if(eligible.length === 0){ alert("Sab ki committee nikal chuki hai!"); return; }
-  let winner = eligible[Math.floor(Math.random() * eligible.length)];
-  let draw = { winner: winner.name, month: monthKey || `Month-${drawBoxes.length + 1}`, date: new Date().toLocaleString() };
+// ===== DRAW =====
+function doDrawNow(){
+  if(members.length===0){ alert("Pehle member add karen"); return; }
+  let alreadyWon=drawBoxes.map(b=>b.winner);
+  let eligible=members.filter(m=>!alreadyWon.includes(m.name));
+  if(eligible.length===0){ alert("Sab ki committee nikal chuki hai!"); return; }
+  let winner=eligible[Math.floor(Math.random()*eligible.length)];
+  let draw={ winner:winner.name, month:`Month-${drawBoxes.length+1}`, date:new Date().toLocaleString() };
   drawBoxes.push(draw);
-  history.push({ type: "draw", text: `${draw.month} ka Draw - Winner: ${winner.name}`, date: draw.date });
+  history.push({type:"draw", text:`${draw.month} ka Draw - Winner: ${winner.name}`, date:draw.date});
   save();
-  alert(`🎉 Mubarak ho! ${winner.name} ki Committee nikal gayi! (${draw.month})`);
+  alert(`🎉 Mubarak ho! ${winner.name} ki Committee nikal gayi!`);
 }
 
-// ===== 8. WITHDRAW - LOCK SYSTEM =====
+// ===== WITHDRAW - LOCK =====
 function canWithdraw(member){
   if(!member) return false;
-  let totalMonths = getTotalMonths();
-  // Shart 1: Iski committee nikli ho
-  let isDrawWon = drawBoxes.some(b => b.winner === member.name);
-  // Shart 2: Iski collection poori ho - Jitne member utni qistain
-  let paidCount = getPaidCount(member.name);
-  let isCollectionDone = paidCount >= totalMonths && totalMonths > 0;
-  return isDrawWon && isCollectionDone;
+  let total=getTotalMonths();
+  let isWon=drawBoxes.some(b=>b.winner===member.name);
+  let paid=getPaidCount(member.name);
+  return isWon && paid>=total && total>0;
 }
-
 function getWithdrawStatus(member){
   if(!member) return "";
-  let totalMonths = getTotalMonths();
-  let paidCount = getPaidCount(member.name);
-  let isDrawWon = drawBoxes.some(b => b.winner === member.name);
-  if(!isDrawWon){
-    return `⏳ Abhi aapki committee nahi nikli. Withdraw ka option baad me aayega. (Paid: ${paidCount}/${totalMonths})`;
-  }
-  if(paidCount < totalMonths){
-    return `⏳ Aapki committee nikal gayi hai, Collection poori hote hi Withdraw khul jayega. (Paid: ${paidCount}/${totalMonths})`;
-  }
-  return `✅ Mubarak ho! Aap Withdraw kar sakte hain. (Paid: ${paidCount}/${totalMonths})`;
+  let total=getTotalMonths(); let paid=getPaidCount(member.name);
+  let isWon=drawBoxes.some(b=>b.winner===member.name);
+  if(!isWon) return `⏳ Abhi aapki committee nahi nikli. Withdraw ka option baad me aayega. (Paid: ${paid}/${total})`;
+  if(paid<total) return `⏳ Aapki committee nikal gayi hai, Collection poori hote hi Withdraw khul jayega. (Paid: ${paid}/${total})`;
+  return `✅ Mubarak ho! Aap Withdraw kar sakte hain. (Paid: ${paid}/${total})`;
 }
-
-function requestWithdraw(memberName){
-  let member = members.find(m => m.name === memberName);
+function doWithdraw(){
+  let member=members.find(m=>m.name===currentUser);
+  if(!member && isAdmin) { alert("Admin se withdraw nahi hota"); return; }
   if(!member) return;
-  if(!canWithdraw(member)){
-    alert(getWithdrawStatus(member));
-    return;
-  }
-  if(!confirm(memberName + " ko Withdraw dena hai?")) return;
-  history.push({ type: "withdraw", text: `${memberName} ne Withdraw liya`, date: new Date().toLocaleString() });
-  save();
-  alert(`💰 ${memberName} ka Withdraw ho gaya!`);
+  if(!canWithdraw(member)){ alert(getWithdrawStatus(member)); return; }
+  if(!confirm(member.name+" ko Withdraw dena hai?")) return;
+  history.push({type:"withdraw", text:`${member.name} ne Withdraw liya`, date:new Date().toLocaleString()});
+  save(); alert(`💰 ${member.name} ka Withdraw ho gaya!`);
 }
 
-// Member wali screen me Withdraw button dikhana/chupana
-function renderMemberView(){
-  let member = members.find(m => m.name === currentUser);
-  if(!member) return;
-  let withdrawBtn = document.getElementById('withdrawBtn');
-  if(withdrawBtn){
-    if(canWithdraw(member)){
-      withdrawBtn.style.display = 'block';
-      withdrawBtn.innerText = '💰 Withdraw - Apni Committee Nikalo';
-      withdrawBtn.disabled = false;
-    } else {
-      withdrawBtn.style.display = 'none';
-    }
-  }
-  let statusText = document.getElementById('memberStatus');
-  if(statusText){
-    statusText.innerText = getWithdrawStatus(member);
-  }
-  let infoText = document.getElementById('committeeInfo');
-  if(infoText){
-    infoText.innerText = getCommitteeInfo();
-  }
-}
-
-// ===== 9. RENDER - SCREEN UPDATE =====
+// ===== RENDER =====
 function render(){
-  // Committee Info har jagah update karo
-  let infos = document.querySelectorAll('.committee-info, #committeeInfo');
-  infos.forEach(el => el.innerText = getCommitteeInfo());
+  let infos=document.querySelectorAll('.committee-info, #committeeInfo');
+  infos.forEach(el=>el.innerText=getCommitteeInfo());
+  let cnt=document.getElementById('memberCount'); if(cnt) cnt.innerText=members.length;
 
-  // Members list
-  let listEl = document.getElementById('membersList');
+  let listEl=document.getElementById('membersList');
   if(listEl){
-    if(members.length === 0){
-      listEl.innerHTML = `<div style="text-align:center;padding:20px;color:#888">Koi member nahi hai.<br>Admin se naya member Add karwayen.</div>`;
+    if(members.length===0){
+      listEl.innerHTML=`<div style="text-align:center;padding:20px;color:#888">Koi member nahi hai.<br>Admin se naya member Add karwayen.</div>`;
     } else {
-      listEl.innerHTML = members.map(m => {
-        let paid = getPaidCount(m.name);
-        let total = getTotalMonths();
-        let won = drawBoxes.some(b => b.winner === m.name);
-        let canW = canWithdraw(m);
-        return `
-        <div style="border:1px solid #ddd;padding:12px;border-radius:12px;margin-bottom:10px;background:#fff">
+      listEl.innerHTML=members.map(m=>{
+        let paid=getPaidCount(m.name); let total=getTotalMonths();
+        let won=drawBoxes.some(b=>b.winner===m.name);
+        let canW=canWithdraw(m);
+        return `<div class="member">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><b>${m.name}</b><br><small>${m.phone || ""} | Paid: ${paid}/${total} ${won ? "🎉 Draw Jeeta" : ""}</small></div>
-            ${isAdmin ? `<button onclick="deleteMember('${m.name}')" style="background:#ff4444;color:#fff;border:none;padding:6px 10px;border-radius:8px">🗑️</button>` : ""}
+            <div><b>${m.name}</b><br><span class="small">📞 ${m.phone||"No Phone"} | 💰 ${m.amount||0}/mahina | Paid: ${paid}/${total} ${won?"🎉 Draw Jeeta":""}</span></div>
+            ${isAdmin?`<div style="display:flex;gap:6px"><button onclick="editMember(${m.id})" style="background:#007bff;color:#fff;border:none;padding:7px 10px;border-radius:8px">✏️ Edit</button><button onclick="deleteMember('${m.name}')" style="background:#ff4444;color:#fff;border:none;padding:7px 10px;border-radius:8px">🗑️</button></div>`:""}
           </div>
-          <div style="margin-top:8px;font-size:13px;color:${canW ? "green" : "#888"}">${canW ? "✅ Withdraw Available" : getWithdrawStatus(m)}</div>
-          ${isAdmin ? `<button onclick="requestWithdraw('${m.name}')" ${canW ? "" : "disabled style='opacity:0.4'"} style="margin-top:8px;padding:8px 12px;background:#0A7A3A;color:#fff;border:none;border-radius:8px">💰 Withdraw</button>` : ""}
-          ${!isAdmin && currentUser === m.name ? `<button id="withdrawBtn" onclick="requestWithdraw('${m.name}')" style="display:${canW ? "block" : "none"};margin-top:8px;padding:10px;background:#0A7A3A;color:#fff;border:none;border-radius:8px;width:100%">💰 Withdraw</button><p id="memberStatus" style="font-size:13px">${getWithdrawStatus(m)}</p>` : ""}
+          <div style="margin-top:6px;font-size:13px;color:${canW?"green":"#888"}">${canW?"✅ Withdraw Available":getWithdrawStatus(m)}</div>
         </div>`;
       }).join('');
     }
   }
 
-  // Draw list
-  let drawEl = document.getElementById('drawList');
-  if(drawEl){
-    drawEl.innerHTML = drawBoxes.length === 0 ? "Abhi koi Draw nahi hua" : drawBoxes.map(d => `🎉 ${d.month} - <b>${d.winner}</b> - ${d.date}`).join('<br>');
+  // Calendar - Har member ke liye mahine ke button
+  let calEl=document.getElementById('calendarList');
+  if(calEl){
+    let total=getTotalMonths();
+    if(total===0) calEl.innerHTML="Pehle member add karen";
+    else {
+      calEl.innerHTML=members.map(m=>{
+        let btns="";
+        for(let i=1;i<=total;i++){
+          let key="Month-"+i;
+          let isPaid=calendar[m.name] && calendar[m.name][key]==="paid";
+          btns+=`<button onclick="togglePaid('${m.name}','${key}')" style="padding:7px 10px;margin:3px;border:none;border-radius:8px;background:${isPaid?"#0A7A3A":"#eee"};color:${isPaid?"#fff":"#333"}">M${i} ${isPaid?"✅":""}</button>`;
+        }
+        return `<div style="margin-bottom:12px"><b>${m.name}</b><br>${btns}</div>`;
+      }).join('');
+    }
   }
 
-  // History
-  let histEl = document.getElementById('historyList');
-  if(histEl){
-    histEl.innerHTML = history.slice(-20).reverse().map(h => `• ${h.text} - ${h.date}`).join('<br>');
+  // Member Panel - Withdraw button
+  let mem=members.find(m=>m.name===currentUser);
+  if(mem){
+    let st=document.getElementById('memberStatus'); if(st) st.innerText=getWithdrawStatus(mem);
+    let wb=document.getElementById('withdrawBtn');
+    if(wb){ if(canWithdraw(mem)){ wb.classList.remove('hidden'); } else { wb.classList.add('hidden'); } }
   }
 
-  if(currentUser && !isAdmin) renderMemberView();
+  let drawEl=document.getElementById('drawList');
+  if(drawEl) drawEl.innerHTML=drawBoxes.length===0?"Abhi koi Draw nahi hua":drawBoxes.map(d=>`🎉 ${d.month} - <b>${d.winner}</b> - ${d.date}`).join('<br>');
+
+  let histEl=document.getElementById('historyList');
+  if(histEl) histEl.innerHTML=history.slice(-20).reverse().map(h=>`• ${h.text} - ${h.date}`).join('<br>');
 }
 
-// Pehli dafa render karo
 document.addEventListener('DOMContentLoaded', render);
 render();
 
-// ===== 10. EXPORT FOR HTML BUTTONS =====
-window.addMember = addMember;
-window.deleteMember = deleteMember;
-window.togglePaid = togglePaid;
-window.doDraw = doDraw;
-window.loginAdmin = loginAdmin;
-window.loginMember = loginMember;
-window.logout = logout;
-window.requestWithdraw = requestWithdraw;
-window.clearAllData = clearAllData;
-window.getTotalMonths = getTotalMonths;
-window.getCommitteeInfo = getCommitteeInfo;
-window.canWithdraw = canWithdraw;
+// Export
+window.showLogin=showLogin; window.doAdminLogin=doAdminLogin; window.doMemberLogin=doMemberLogin;
+window.doLogout=doLogout; window.doAddMember=doAddMember; window.editMember=editMember;
+window.doSaveEdit=doSaveEdit; window.closeEdit=closeEdit; window.deleteMember=deleteMember;
+window.clearAll=clearAll; window.togglePaid=togglePaid; window.doDrawNow=doDrawNow;
+window.doWithdraw=doWithdraw; window.getTotalMonths=getTotalMonths;
