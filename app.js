@@ -231,3 +231,8 @@ function resetData(){if(confirm('Sab data reset karna hai?')){localStorage.clear
 window.openModal=openModal; window.closeModal=closeModal; window.addMember=addMember; window.markPaid=markPaid; window.whatsapp=whatsapp; window.uploadProof=uploadProof; window.approveFromPayment=approveFromPayment; window.viewProof=viewProof; window.approveProof=approveProof; window.rejectProof=rejectProof; window.addPayment=addPayment; window.showReceipt=showReceipt; window.clearHistory=clearHistory; window.resetData=resetData;
 document.getElementById('proofFile').addEventListener('change',function(e){let f=e.target.files[0];if(!f)return;document.getElementById('proofFileName').innerText='📄 '+f.name;let r=new FileReader();r.onload=function(ev){tempProofImg=ev.target.result;let img=document.getElementById('proofPreview');img.src=tempProofImg;img.style.display='block';};r.readAsDataURL(f);});
 render(); fillMemberLogin();
+
+// AUTO-UPLOAD: App khulte hi data Firebase me bhej do
+setTimeout(()=>{ 
+  if(window.db){ saveToFirebase(); console.log("Auto upload try..."); }
+}, 3000);
