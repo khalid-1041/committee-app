@@ -11,4 +11,3 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 window.fb = { db, doc, setDoc, getDoc };
-console.log("Firebase Connected");
