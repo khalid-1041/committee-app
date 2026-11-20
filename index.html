@@ -3,136 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Committee App - Khalid</title>
+<title>Committee App</title>
 <style>
-*{box-sizing:border-box;font-family:Arial,sans-serif}
-body{margin:0;background:#f2f5f2;padding:0}
-.top{background:#0A7A3A;color:#fff;padding:16px;text-align:center;position:sticky;top:0;z-index:10}
-.top h1{margin:0;font-size:22px}
-.top p{margin:4px 0 0 0;font-size:13px;opacity:0.9}
-.wrap{padding:14px;max-width:600px;margin:auto;padding-bottom:90px}
-.card{background:#fff;border-radius:15px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-input,select{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:10px;font-size:15px}
-.btn{width:100%;padding:13px;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer}
-.btn-green{background:#0A7A3A;color:#fff}
-.btn-blue{background:#007bff;color:#fff}
+body{margin:0;font-family:Arial;background:#f0f2f0}
+.header{background:#0A7A3A;color:#fff;padding:15px;text-align:center}
+.header h1{margin:0;font-size:22px}
+.header p{margin:5px 0 0;font-size:13px}
+.container{max-width:600px;margin:auto;padding:12px;padding-bottom:40px}
+.card{background:#fff;border-radius:12px;padding:15px;margin-bottom:12px;box-shadow:0 1px 5px rgba(0,0,0,0.08)}
+h3{margin:0 0 10px 0}
+input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
+button{padding:11px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
+.btn-green{background:#0A7A3A;color:#fff;width:100%}
+.btn-blue{background:#007bff;color:#fff;width:100%}
+.btn-orange{background:#ff9800;color:#fff}
 .btn-red{background:#ff4444;color:#fff}
 .btn-gray{background:#eee}
-.small{font-size:13px;color:#666}
-.badge{display:inline-block;background:#e8f5ee;color:#0A7A3A;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
-.flex{display:flex;gap:8px}
-.flex button{flex:1}
-.member{border:1px solid #eee;padding:12px;border-radius:12px;margin-bottom:10px;background:#fff}
-.tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #ddd;z-index:20}
-.tabbar button{flex:1;padding:13px 0;border:none;background:#fff;font-size:14px}
-.tabbar button.active{color:#0A7A3A;font-weight:bold;border-top:3px solid #0A7A3A}
+.small{font-size:12px;color:#666}
+.row{display:flex;gap:8px}
+.row button{flex:1}
+.member-box{border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #eee;padding:6px;text-align:center}
+th{background:#f8f8f8}
 .hidden{display:none}
-#editBox{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.3);width:90%;max-width:350px;z-index:999}
+#editBox{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3);width:90%;max-width:340px;z-index:999}
 </style>
 </head>
 <body>
-
-<div class="top">
+<div class="header">
   <h1>💰 Committee App</h1>
-  <p id="committeeInfo" class="committee-info">📊 Total Member: 0 | Committee: 0 Mahine ki</p>
+  <p id="committeeInfo">📊 Total Member: 0 | Committee: 0 Mahine ki</p>
 </div>
 
-<div class="wrap">
+<div class="container">
 
 <!-- LOGIN -->
-<div id="loginScreen" class="card">
-  <h2 style="margin:0">👋 Welcome</h2>
-  <p class="small">Admin ya Member ke tor par login karein</p>
-  <div class="flex">
-    <button class="btn btn-green" onclick="showLogin('admin')">Admin Login</button>
-    <button class="btn btn-blue" onclick="showLogin('member')">Member Login</button>
+<div id="loginBox" class="card">
+  <h3>👋 Welcome</h3>
+  <div class="row">
+    <button class="btn-green" onclick="showLogin('admin')">Admin</button>
+    <button class="btn-blue" onclick="showLogin('member')">Member</button>
   </div>
-
-  <div id="adminLogin" style="margin-top:14px">
-    <label>Admin Password</label>
-    <input id="adminPass" type="password" placeholder="Password: 1234">
-    <button class="btn btn-green" onclick="doAdminLogin()">Admin Login Karein</button>
+  <div id="adminLogin">
+    <input id="adminPass" type="password" placeholder="Admin Password - 1234">
+    <button class="btn-green" onclick="doAdminLogin()">Login</button>
   </div>
-
-  <div id="memberLogin" class="hidden" style="margin-top:14px">
-    <label>Apna Naam</label>
-    <input id="memberNameInput" placeholder="Jese: Bilal">
-    <label>Phone Number (Optional)</label>
-    <input id="memberPhoneInput" placeholder="0300-1234567">
-    <button class="btn btn-blue" onclick="doMemberLogin()">Member Login Karein</button>
+  <div id="memberLogin" class="hidden">
+    <input id="memberNameInput" placeholder="Apna Naam likhen">
+    <input id="memberPhoneInput" placeholder="Phone Number">
+    <button class="btn-blue" onclick="doMemberLogin()">Login</button>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="mainScreen" class="hidden">
-
+<!-- MAIN -->
+<div id="mainBox" class="hidden">
   <div class="card" style="display:flex;justify-content:space-between;align-items:center">
-    <div><b id="welcomeText">Welcome</b><br><span class="small" id="roleText"></span></div>
-    <button onclick="doLogout()" style="padding:8px 14px;border:none;border-radius:8px;background:#ff4444;color:#fff">Logout</button>
+    <div><b id="welcomeText"></b><br><span class="small" id="roleText"></span></div>
+    <button class="btn-red" onclick="doLogout()" style="width:auto">Logout</button>
   </div>
 
-  <!-- ADMIN: ADD MEMBER -->
+  <!-- ADMIN ADD -->
   <div id="adminPanel" class="card hidden">
-    <h3 style="margin:0">➕ Naya Member Add Karein</h3>
-    <input id="newName" placeholder="Member ka Naam - Jese: Bilal">
-    <input id="newPhone" placeholder="Phone - Jese: 0300-1234567">
-    <input id="newAmount" type="number" placeholder="Monthly Raqam - Jese: 10000">
-    <button class="btn btn-green" onclick="doAddMember()">✅ Member Add Karein</button>
-    <p class="small">Jitne member add karenge, committee utne hi mahine ki ban jayegi. Auto!</p>
-    <div class="flex" style="margin-top:10px">
-      <button onclick="doDrawNow()" style="padding:12px;border:none;border-radius:10px;background:#ff9800;color:#fff;font-weight:bold">🎲 Draw Nikalo</button>
-      <button onclick="clearAll()" style="padding:12px;border:none;border-radius:10px;background:#eee">🗑️ Sara Data Clear</button>
+    <h3>➕ Naya Member Add Karein</h3>
+    <input id="newName" placeholder="Naam">
+    <input id="newPhone" placeholder="Phone Number - 0300-1234567">
+    <input id="newAmount" type="number" placeholder="Monthly Raqam - 10000">
+    <button class="btn-green" onclick="doAddMember()">Member Add Karein</button>
+    <div class="row" style="margin-top:10px">
+      <button class="btn-orange" onclick="doDrawNow()">🎲 Draw Nikalo</button>
+      <button class="btn-gray" onclick="clearAll()">🗑️ Clear</button>
     </div>
   </div>
 
   <!-- MEMBER STATUS -->
   <div id="memberPanel" class="card hidden">
-    <h3 style="margin:0">👤 Mera Status</h3>
+    <h3>👤 Mera Status</h3>
     <p id="memberStatus" style="font-size:14px;line-height:1.6"></p>
-    <button id="withdrawBtn" onclick="doWithdraw()" class="btn btn-green hidden">💰 Withdraw - Apni Committee Nikalo</button>
+    <button id="withdrawBtn" class="btn-green hidden" onclick="doWithdraw()">💰 Withdraw</button>
   </div>
 
-  <!-- MEMBERS LIST -->
+  <!-- MEMBERS -->
   <div class="card">
-    <h3 style="margin:0 0 10px 0">👥 Members (<span id="memberCount">0</span>)</h3>
+    <h3>👥 Members (<span id="memberCount">0</span>)</h3>
     <div id="membersList"></div>
   </div>
 
-  <!-- PAYMENT CALENDAR -->
+  <!-- CALENDAR -->
   <div class="card">
-    <h3 style="margin:0 0 10px 0">📅 Payment Calendar</h3>
-    <p class="small">Admin kisi bhi member ki qist Paid kar sakta hai. Member par click karke Paid karein.</p>
+    <h3>📅 Payment Calendar</h3>
     <div id="calendarList"></div>
   </div>
 
   <!-- DRAW -->
   <div class="card">
-    <h3 style="margin:0 0 10px 0">🎲 Draw Results</h3>
+    <h3>🎲 Draw Results</h3>
     <div id="drawList">Abhi koi Draw nahi hua</div>
   </div>
 
   <!-- HISTORY -->
   <div class="card">
-    <h3 style="margin:0 0 10px 0">📜 History</h3>
-    <div id="historyList" style="font-size:13px;line-height:1.8"></div>
+    <h3>📜 History</h3>
+    <div id="historyList" style="font-size:13px;line-height:1.7"></div>
   </div>
-
-</div>
 </div>
 
-<!-- EDIT BOX -->
+</div>
+
+<!-- EDIT POPUP -->
 <div id="editBox">
-  <h3 style="margin:0 0 15px 0">✏️ Member Edit Karein</h3>
-  <label>Naam</label>
-  <input id="editName">
-  <label>Phone Number</label>
-  <input id="editPhone" type="tel" placeholder="0300-1234567">
-  <label>Monthly Raqam</label>
-  <input id="editAmount" type="number" placeholder="10000">
-  <div class="flex">
-    <button onclick="doSaveEdit()" class="btn btn-green">✅ Save</button>
-    <button onclick="closeEdit()" class="btn btn-gray">Cancel</button>
-  </div>
+  <h3 style="margin-top:0">✏️ Member Edit Karein</h3>
+  <label>Naam</label><input id="editName">
+  <label>Phone Number</label><input id="editPhone">
+  <label>Monthly Raqam</label><input id="editAmount" type="number">
+  <div class="row"><button class="btn-green" onclick="doSaveEdit()">✅ Save</button><button class="btn-gray" onclick="closeEdit()">Cancel</button></div>
 </div>
 
 <script type="module" src="firebase.js"></script>
