@@ -3,122 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Committee App</title>
+<title>Committee Management</title>
 <style>
-body{margin:0;font-family:Arial;background:#f0f2f0}
-.header{background:#0A7A3A;color:#fff;padding:15px;text-align:center}
-.header h1{margin:0;font-size:22px}
-.header p{margin:5px 0 0;font-size:13px}
-.container{max-width:600px;margin:auto;padding:12px;padding-bottom:40px}
-.card{background:#fff;border-radius:12px;padding:15px;margin-bottom:12px;box-shadow:0 1px 5px rgba(0,0,0,0.08)}
-h3{margin:0 0 10px 0}
-input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
-button{padding:11px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:bold}
-.btn-green{background:#0A7A3A;color:#fff;width:100%}
-.btn-blue{background:#007bff;color:#fff;width:100%}
-.btn-orange{background:#ff9800;color:#fff}
-.btn-red{background:#ff4444;color:#fff}
-.btn-gray{background:#eee}
-.small{font-size:12px;color:#666}
-.row{display:flex;gap:8px}
-.row button{flex:1}
-.member-box{border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{border:1px solid #eee;padding:6px;text-align:center}
-th{background:#f8f8f8}
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#D9EAD3;padding-bottom:70px}
+.green-bg{background:#0A7A3A;min-height:100vh;padding:30px 14px}
+.white-card{background:#fff;border-radius:22px;padding:22px;max-width:480px;margin:60px auto 0}
+.logo{width:90px;height:90px;background:#0A7A3A;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;margin:-70px auto 15px;border:5px solid #fff}
+.center{text-align:center}
+input{width:100%;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:10px;font-size:16px}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:17px;font-weight:bold;cursor:pointer}
+.btn-green{background:#0A7A3A;color:#fff}.btn-orange{background:#FF8C00;color:#fff}.btn-red{background:#FF4444;color:#fff}.btn-gray{background:#E8E8E8}
+.toggle{display:flex;background:#eee;border-radius:10px;padding:4px;margin:15px 0}
+.toggle button{flex:1;padding:11px;border:none;border-radius:8px;font-size:16px;font-weight:bold;background:transparent}
+.toggle button.active{background:#0A7A3A;color:#fff}
+.top-head{display:flex;align-items:center;gap:12px;padding:14px}
+.top-head h1{font-size:28px;line-height:1.2;margin:0}
+.hero{background:#0A7A3A;color:#fff;border-radius:20px;padding:20px;margin:14px}
+.hero h2{font-size:22px;margin:0}
+.pill{background:rgba(255,255,255,0.22);display:inline-block;padding:7px 14px;border-radius:20px;font-size:14px;margin-top:12px}
+.stats{display:flex;gap:10px;margin:14px}
+.stat{flex:1;background:#fff;border-radius:16px;padding:14px;text-align:center}
+.stat b{font-size:18px;display:block}.stat span{font-size:14px;color:#555}
+.card{background:#fff;border-radius:18px;padding:18px;margin:14px}
+.card-orange-border{border:2px solid #FF8C00}
+.green-card{background:#0A7A3A;color:#fff;border-radius:18px;padding:18px;margin:14px;text-align:center}
+.count-box{display:flex;gap:10px;margin:15px 0}
+.count-box div{flex:1;background:rgba(255,255,255,0.2);border-radius:12px;padding:12px;text-align:center}
+.count-box b{font-size:26px;display:block}
+.member-row{display:flex;gap:12px;align-items:center;border-bottom:1px solid #eee;padding:12px 0}
+.avatar{width:56px;height:56px;border-radius:50%;background:#FFC107;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;flex-shrink:0}
+.mini-btn{border:1px solid #0A7A3A;color:#0A7A3A;background:#fff;padding:6px 10px;border-radius:10px;font-size:13px;margin:3px 0;display:inline-block;cursor:pointer}
+.mini-btn-blue{border-color:#007bff;color:#007bff}.mini-btn-red{border-color:#ff4444;color:#ff4444}
+.progress{height:10px;background:#eee;border-radius:20px;overflow:hidden;margin:10px 0}
+.progress div{height:100%;background:#0A7A3A}
+.box-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:15px}
+.box{border-radius:16px;padding:14px;text-align:center;color:#fff;font-weight:bold;font-size:14px;line-height:1.4;cursor:pointer;min-height:125px;display:flex;flex-direction:column;justify-content:center}
+.box-green{background:#0A7A3A}.box-dark{background:#2B2B2B}.box-orange{background:#FF8C00}
+.tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;padding:8px;border-top:1px solid #ddd;z-index:99}
+.tabbar button{flex:1;padding:10px 2px;border:none;background:#fff;font-size:14px;border-radius:10px}
+.tabbar button.active{background:#0A7A3A;color:#fff;font-weight:bold}
 .hidden{display:none}
-#editBox{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3);width:90%;max-width:340px;z-index:999}
+#editBox{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.3);width:90%;max-width:360px;z-index:999}
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>💰 Committee App</h1>
-  <p id="committeeInfo">📊 Total Member: 0 | Committee: 0 Mahine ki</p>
-</div>
 
-<div class="container">
-
-<!-- LOGIN -->
-<div id="loginBox" class="card">
-  <h3>👋 Welcome</h3>
-  <div class="row">
-    <button class="btn-green" onclick="showLogin('admin')">Admin</button>
-    <button class="btn-blue" onclick="showLogin('member')">Member</button>
-  </div>
-  <div id="adminLogin">
-    <input id="adminPass" type="password" placeholder="Admin Password - 1234">
-    <button class="btn-green" onclick="doAdminLogin()">Login</button>
-  </div>
-  <div id="memberLogin" class="hidden">
-    <input id="memberNameInput" placeholder="Apna Naam likhen">
-    <input id="memberPhoneInput" placeholder="Phone Number">
-    <button class="btn-blue" onclick="doMemberLogin()">Login</button>
+<!-- 1. LOGIN - Jaisa Screenshot 1 Me Hai -->
+<div id="loginScreen" class="green-bg">
+  <div class="white-card">
+    <div class="logo">KF</div>
+    <h1 class="center" style="font-size:28px">Committee Management</h1>
+    <p class="center" style="font-size:18px;margin:10px 0">December 2026 se Start</p>
+    <div class="toggle">
+      <button id="tabAdmin" class="active" onclick="switchLogin('admin')">👑 Admin</button>
+      <button id="tabMember" onclick="switchLogin('member')">👤 Member</button>
+    </div>
+    <div id="adminLoginBox">
+      <input id="adminPass" type="password" placeholder="Admin PIN - 1234" style="letter-spacing:4px;text-align:center;font-size:20px">
+      <button class="btn btn-green" onclick="doAdminLogin()">🔒 Admin Login</button>
+      <p class="center" style="color:#888;font-size:13px;margin-top:10px">Default Admin PIN: 1234</p>
+    </div>
+    <div id="memberLoginBox" class="hidden">
+      <input id="memberNameInput" placeholder="Apna Naam - Jese: Khalid Farooq">
+      <input id="memberPhoneInput" placeholder="Phone Number">
+      <button class="btn btn-green" onclick="doMemberLogin()">👤 Member Login</button>
+    </div>
   </div>
 </div>
 
 <!-- MAIN -->
-<div id="mainBox" class="hidden">
-  <div class="card" style="display:flex;justify-content:space-between;align-items:center">
-    <div><b id="welcomeText"></b><br><span class="small" id="roleText"></span></div>
-    <button class="btn-red" onclick="doLogout()" style="width:auto">Logout</button>
+<div id="mainScreen" class="hidden">
+  <div class="top-head"><span style="font-size:26px">☰</span><h1>Committee<br>Management</h1><button onclick="doLogout()" style="margin-left:auto;background:#fff;border:none;padding:8px 12px;border-radius:8px">Logout</button></div>
+
+  <!-- DASHBOARD - Screenshot 2 -->
+  <div id="pageDashboard">
+    <div class="hero">
+      <h2>December Committee 2026</h2>
+      <p style="margin:8px 0">Start: December 2026 • Admin ki Pehli Committee</p>
+      <span class="pill">🛡️ Admin • Khalid Farooq • Draw #1 - DISABLED</span>
+    </div>
+    <div class="stats">
+      <div class="stat">👥<b>Members</b><span id="statMembers">12</span></div>
+      <div class="stat">💰<b>Monthly</b><span>10,000 PKR</span></div>
+      <div class="stat">📅<b>Start</b><span>Dec 2026</span></div>
+    </div>
+    <div class="card card-orange-border">
+      <h3 style="margin:0">🎲 Draw - Abhi Baaki Hai</h3>
+      <p id="drawStatusText" style="margin:10px 0">2 / 12 boxes khul chuke hain.</p>
+      <button class="btn btn-orange" onclick="showPage('draw')">🎲 Draw Screen Kholo</button>
+      <button class="btn btn-red" style="margin-top:10px" onclick="resetDraw()">🔄 Calendar + Draw Reset Karo</button>
+    </div>
+    <div class="card"><h3 style="margin:0">📊 <span id="committeeInfo">Total Member: 12 | Committee: 12 Mahine ki</span></h3><p style="font-size:13px;color:#666;margin:8px 0 0">Jitne member add karenge, committee utne hi mahine ki ban jayegi - Auto!</p></div>
   </div>
 
-  <!-- ADMIN ADD -->
-  <div id="adminPanel" class="card hidden">
-    <h3>➕ Naya Member Add Karein</h3>
-    <input id="newName" placeholder="Naam">
-    <input id="newPhone" placeholder="Phone Number - 0300-1234567">
-    <input id="newAmount" type="number" placeholder="Monthly Raqam - 10000">
-    <button class="btn-green" onclick="doAddMember()">Member Add Karein</button>
-    <div class="row" style="margin-top:10px">
-      <button class="btn-orange" onclick="doDrawNow()">🎲 Draw Nikalo</button>
-      <button class="btn-gray" onclick="clearAll()">🗑️ Clear</button>
+  <!-- DRAW - Screenshot 3 -->
+  <div id="pageDraw" class="hidden">
+    <div style="padding:0 14px"><h1 style="margin:0">← 🎲 Lucky Draw</h1></div>
+    <div class="card center">
+      <h2>Apna Box Kholo - Random Month Payo!</h2>
+      <p style="line-height:1.6">Box #1 = Admin - December 2026 - DISABLED<br>Har member sirf <b>1 box</b> khol sakta hai. Ek baar khol liya to baaqi disable.<br>Khula hua box me <b>Random Month</b> milega.</p>
+      <p style="color:#0A7A3A;font-weight:bold" id="drawLoginMsg">Admin view me ho. Member login kar ke Draw kholo.</p>
+      <div class="box-grid" id="drawBoxes"></div>
     </div>
   </div>
 
-  <!-- MEMBER STATUS -->
-  <div id="memberPanel" class="card hidden">
-    <h3>👤 Mera Status</h3>
-    <p id="memberStatus" style="font-size:14px;line-height:1.6"></p>
-    <button id="withdrawBtn" class="btn-green hidden" onclick="doWithdraw()">💰 Withdraw</button>
+  <!-- MEMBERS / PAYMENTS - Screenshot 4 -->
+  <div id="pageMembers" class="hidden">
+    <div style="padding:0 14px"><h1 style="margin:0">← Members (<span id="memberCount">12</span>)</h1></div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between"><b>Total Pot</b><b id="totalPotText">120,000 PKR</b></div>
+      <h3 style="margin:14px 0 8px">Collection Progress</h3>
+      <p id="collectionText">120,000 PKR collected of 120,000 PKR</p>
+      <div class="progress"><div id="progressBar" style="width:100%"></div></div>
+      <p style="text-align:right;font-weight:bold"><span id="progressPct">100</span>%</p>
+      <p>📅 Next draw: <b>15 Dec 2026</b></p>
+      <p>🕐 Cycle: <b><span id="cycleText">1 of 12 - December 2026</span></b></p>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 10px">Members Payment Status</h3>
+      <button class="btn btn-green" onclick="showAddMember()">+ Invite / Add Member</button>
+      <div id="addMemberBox" class="hidden" style="margin-top:12px">
+        <input id="newName" placeholder="Naam"><input id="newPhone" placeholder="Phone - 0300-1234567"><input id="newAmount" type="number" placeholder="Monthly - 10000">
+        <button class="btn btn-green" onclick="doAddMember()">✅ Add Karein</button>
+      </div>
+      <div id="membersList"></div>
+    </div>
+    <div class="card"><h3 style="margin:0 0 10px">📅 Payment Calendar</h3><div id="calendarList"></div></div>
   </div>
 
-  <!-- MEMBERS -->
-  <div class="card">
-    <h3>👥 Members (<span id="memberCount">0</span>)</h3>
-    <div id="membersList"></div>
+  <!-- WINNERS - Screenshot 5 -->
+  <div id="pageWinners" class="hidden">
+    <div class="card center" style="border:2px solid #FFC107">
+      <p>2026-12-05</p>
+      <button class="btn btn-green" id="withdrawBtn" onclick="doWithdraw()">💸 Withdrawal Karo - 120,000 PKR Bhejo</button>
+      <p id="memberStatus" style="font-size:14px;margin-top:10px;line-height:1.6"></p>
+    </div>
+    <div class="green-card">
+      <h2 style="margin:0">⏳ December Committee Countdown</h2>
+      <p>December 2026 Committee: Khalid Farooq - 5 December 2026</p>
+      <div class="count-box"><div><b id="cdD">14</b>Din</div><div><b id="cdH">21</b>Ghante</div><div><b id="cdM">15</b>Minute</div><div><b id="cdS">14</b>Second</div></div>
+      <p>Admin ki committee me 14 din baaqi hain.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 10px">🕐 Payment History</h3>
+      <p id="historyList">No payment history yet.</p>
+      <button class="btn btn-gray" onclick="clearHistory()">Clear History</button>
+    </div>
+    <div class="card"><h3 style="margin:0 0 10px">🎉 Winners / Draw Results</h3><div id="drawList"></div></div>
   </div>
 
-  <!-- CALENDAR -->
-  <div class="card">
-    <h3>📅 Payment Calendar</h3>
-    <div id="calendarList"></div>
-  </div>
-
-  <!-- DRAW -->
-  <div class="card">
-    <h3>🎲 Draw Results</h3>
-    <div id="drawList">Abhi koi Draw nahi hua</div>
-  </div>
-
-  <!-- HISTORY -->
-  <div class="card">
-    <h3>📜 History</h3>
-    <div id="historyList" style="font-size:13px;line-height:1.7"></div>
+  <div class="tabbar">
+    <button id="btnDashboard" class="active" onclick="showPage('dashboard')">Dashboard</button>
+    <button id="btnDraw" onclick="showPage('draw')">🎲 Draw</button>
+    <button id="btnMembers" onclick="showPage('members')">Payments</button>
+    <button id="btnMembers2" onclick="showPage('members')">Members</button>
+    <button id="btnWinners" onclick="showPage('winners')">Winners</button>
   </div>
 </div>
 
-</div>
-
-<!-- EDIT POPUP -->
 <div id="editBox">
   <h3 style="margin-top:0">✏️ Member Edit Karein</h3>
-  <label>Naam</label><input id="editName">
-  <label>Phone Number</label><input id="editPhone">
-  <label>Monthly Raqam</label><input id="editAmount" type="number">
-  <div class="row"><button class="btn-green" onclick="doSaveEdit()">✅ Save</button><button class="btn-gray" onclick="closeEdit()">Cancel</button></div>
+  <label>Naam</label><input id="editName"><label>Phone Number</label><input id="editPhone"><label>Monthly Raqam</label><input id="editAmount" type="number">
+  <div style="display:flex;gap:10px"><button class="btn btn-green" onclick="doSaveEdit()">✅ Save</button><button class="btn btn-gray" onclick="closeEdit()">Cancel</button></div>
 </div>
-
 <script type="module" src="firebase.js"></script>
 <script src="app.js"></script>
 </body>
