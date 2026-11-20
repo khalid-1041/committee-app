@@ -2,14 +2,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 👇 YAHAN APNA CONFIG PASTE KARO - Firebase Console > Project Settings > Your apps se copy karo
+// Tumhara Asli Firebase Config - committee-app-cbd9b
 const firebaseConfig = {
-  apiKey: "YAHAN-APNI-API-KEY-PASTE-KARO",
-  authDomain: "committee-app.firebaseapp.com",
-  projectId: "committee-app",
-  storageBucket: "committee-app.appspot.com",
-  messagingSenderId: "YAHAN-APNA-SENDER-ID",
-  appId: "YAHAN-APNA-APP-ID"
+  apiKey: "AIzaSyA_OMaPxkVd5f9DhhY_b9yinapi-xK3QUw",
+  authDomain: "committee-app-cbd9b.firebaseapp.com",
+  projectId: "committee-app-cbd9b",
+  storageBucket: "committee-app-cbd9b.firebasestorage.app",
+  messagingSenderId: "232996110285",
+  appId: "1:232996110285:web:3ebcd13896f968e4abd8e84"
 };
 
 const app = initializeApp(firebaseConfig);
