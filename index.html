@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KF Dukan Pro</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#E8F5E9;padding-bottom:90px}
+.top{background:#0A7A3A;color:#fff;padding:18px;text-align:center;position:sticky;top:0;z-index:5}
+.top h2{margin:0;font-size:22px}
+.top p{margin:4px 0 0;font-size:13px;opacity:.9}
+.card{background:#fff;margin:12px;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.green{background:#0A7A3A;color:#fff;border:none;padding:13px;border-radius:10px;width:100%;font-weight:bold;font-size:15px;margin-top:8px;cursor:pointer}
+.orange{background:#FF8A00}.grey{background:#ddd;color:#000}
+.row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eee;font-size:15px}
+.item{padding:11px 0;border-bottom:1px solid #eee}
+.btn{border:1px solid #0A7A3A;background:#fff;color:#0A7A3A;padding:7px 9px;border-radius:8px;font-size:12px;margin:2px;cursor:pointer}
+input,select{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:10px;margin:6px 0;font-size:15px;background:#fff}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;padding:20px;overflow:auto}
+.modalBox{background:#fff;border-radius:16px;padding:18px;max-width:420px;margin:40px auto}
+.profitBox{background:#FFFBEA;border:2px solid #FFC107;border-radius:16px;padding:16px;margin:12px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:12px;border-top:1px solid #ddd;z-index:10}
+.nav button{border:none;background:none;font-size:13px;font-weight:bold;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="top"><h2>🏪 <span id="topShopName">Meri Dukan</span></h2><p id="topShopType">Kiryana Store • KF Dukan Pro</p></div>
+
+<div class="profitBox"><h3 style="margin-top:0">📊 Aaj Ka Hisab</h3>
+<div class="row"><span>Aaj Ki Sale</span><b id="todaySale">0 PKR</b></div>
+<div class="row"><span>Aaj Ka Profit</span><b style="color:#0A7A3A" id="todayProfit">0 PKR</b></div>
+<div class="row"><span>Total Udhaar (Khata)</span><b style="color:#ff4444" id="totalUdhaar">0 PKR</b></div>
+<div class="row"><span>Total Stock Items</span><b id="totalStock">0</b></div>
+<div class="row"><span>Total Customers</span><b id="totalCust">0</b></div>
+<button class="green" onclick="openModal('settingsModal')">⚙️ Dukan Ka Naam / Type Badlo</button>
+</div>
+
+<div class="card"><h3>🛒 Nayi Sale Karo</h3>
+<select id="saleProduct"></select>
+<input id="saleQty" type="number" value="1">
+<select id="saleType"><option value="Cash">Cash - Nagad</option><option value="Udhaar">Udhaar - Khata Me</option><option value="JazzCash">JazzCash / Easypaisa</option></select>
+<select id="saleCustomer"></select>
+<button class="green" onclick="doSale()">✅ Sale Karo - Bill Banao</button>
+<p style="font-size:12px;color:#666">Udhaar select karne par paisa us customer ke khate me chala jayega.</p>
+</div>
+
+<div class="card"><h3>📦 Stock / Samaam</h3>
+<button class="green" onclick="openModal('stockModal')">+ Naya Samaam Add Karo</button>
+<div id="stockList"></div></div>
+
+<div class="card"><h3>👥 Customers / Khata</h3>
+<button class="green orange" onclick="openModal('customerModal')">+ Naya Customer Add Karo</button>
+<div id="customerList"></div></div>
+
+<div class="card"><h3>🧾 Sale History</h3><div id="saleHistory"></div>
+<button class="green grey" onclick="clearSaleHistory()">Clear Sale History</button></div>
+
+<div class="nav"><button>🏠 Home</button><button onclick="document.querySelector('.profitBox').scrollIntoView({behavior:'smooth'})">📊 Hisab</button><button onclick="shareApp()">📤 Share</button></div>
+
+<div id="stockModal" class="modal"><div class="modalBox"><h3>+ Naya Samaam</h3><input id="sName" placeholder="Samaam Ka Naam"><input id="sBuy" type="number" placeholder="Kharid Price"><input id="sSell" type="number" placeholder="Bechne Wali Price"><input id="sQty" type="number" placeholder="Quantity"><select id="sUnit"><option>Piece</option><option>Kg</option><option>Litre</option><option>Packet</option><option>Meter</option><option>Dabba</option></select><button class="green" onclick="addStock()">Save Samaam</button><button class="green grey" onclick="closeModal('stockModal')">Cancel</button></div></div>
+<div id="customerModal" class="modal"><div class="modalBox"><h3>+ Naya Customer</h3><input id="cName" placeholder="Customer Ka Naam"><input id="cPhone" placeholder="Phone / WhatsApp"><input id="cAddress" placeholder="Address / Mohalla"><button class="green" onclick="addCustomer()">Save Customer</button><button class="green grey" onclick="closeModal('customerModal')">Cancel</button></div></div>
+<div id="settingsModal" class="modal"><div class="modalBox"><h3>⚙️ Dukan Settings</h3><input id="shopNameInput" placeholder="Dukan Ka Naam"><select id="shopTypeInput"><option>Kiryana Store</option><option>Kapra / Cloth Shop</option><option>Mobile Shop</option><option>Cosmetic Shop</option><option>Hardware / Electric</option><option>General Store</option><option>Other</option></select><button class="green" onclick="saveShopSettings()">Save</button><button class="green grey" onclick="closeModal('settingsModal')">Cancel</button></div></div>
+<div id="receiptModal" class="modal"><div class="modalBox" id="receiptBox"></div></div>
+
+<script>
+let shop=JSON.parse(localStorage.getItem('kf_shop_v2'))||{name:"Meri Dukan",type:"Kiryana Store"};
+let stock=JSON.parse(localStorage.getItem('kf_stock_v2'))||[{name:"Cheeni",buy:170,sell:190,qty:20,unit:"Kg"},{name:"Daal",buy:280,sell:320,qty:15,unit:"Kg"},{name:"Surf",buy:180,sell:220,qty:10,unit:"Packet"}];
+let customers=JSON.parse(localStorage.getItem('kf_cust_v2'))||[{name:"Ahmed Bhai",phone:"0300-1111111",address:"Main Bazar",udhaar:0},{name:"Usman",phone:"0300-2222222",address:"Street 2",udhaar:0}];
+let sales=JSON.parse(localStorage.getItem('kf_sales_v2'))||[];
+function save(){localStorage.setItem('kf_shop_v2',JSON.stringify(shop));localStorage.setItem('kf_stock_v2',JSON.stringify(stock));localStorage.setItem('kf_cust_v2',JSON.stringify(customers));localStorage.setItem('kf_sales_v2',JSON.stringify(sales));render();}
+function openModal(id){document.getElementById(id).style.display='block'}
+function closeModal(id){document.getElementById(id).style.display='none'}
+function saveShopSettings(){shop.name=document.getElementById('shopNameInput').value||shop.name;shop.type=document.getElementById('shopTypeInput').value;save();closeModal('settingsModal');}
+function addStock(){let n=document.getElementById('sName').value.trim();if(!n){alert('Naam likho');return}stock.push({name:n,buy:parseInt(document.getElementById('sBuy').value)||0,sell:parseInt(document.getElementById('sSell').value)||0,qty:parseInt(document.getElementById('sQty').value)||0,unit:document.getElementById('sUnit').value});save();closeModal('stockModal');}
+function deleteStock(i){if(confirm('Delete?')){stock.splice(i,1);save();}}
+function addCustomer(){let n=document.getElementById('cName').value.trim();if(!n){alert('Naam likho');return}customers.push({name:n,phone:document.getElementById('cPhone').value,address:document.getElementById('cAddress').value,udhaar:0});save();closeModal('customerModal');}
+function payUdhaar(i){let amt=parseInt(prompt(customers[i].name+' ne kitne diye? Udhaar: '+customers[i].udhaar))||0;if(amt>0){customers[i].udhaar=Math.max(0,customers[i].udhaar-amt);save();alert('Baqi udhaar: '+customers[i].udhaar);}}
+function deleteCustomer(i){if(confirm('Delete?')){customers.splice(i,1);save();}}
+function doSale(){let pi=document.getElementById('saleProduct').value;if(pi===''){alert('Pehle samaam select karo');return}let p=stock[pi];let qty=parseInt(document.getElementById('saleQty').value)||1;if(qty>p.qty){alert('Stock me sirf '+p.qty+' hai!');return}let type=document.getElementById('saleType').value;let ci=document.getElementById('saleCustomer').value;let total=p.sell*qty;let profit=(p.sell-p.buy)*qty;p.qty-=qty;if(type==='Udhaar'){if(ci===''){alert('Udhaar ke liye customer select karo');p.qty+=qty;return}customers[ci].udhaar+=total;}sales.unshift({item:p.name,qty:qty,total:total,profit:profit,type:type,customer:ci!==''?customers[ci].name:'Cash Customer',date:new Date().toLocaleString()});save();showBill(sales[0]);}
+function showBill(s){document.getElementById('receiptBox').innerHTML='<div style="text-align:center"><h2>🧾 Bill - '+shop.name+'</h2><p>'+s.item+' x '+s.qty+'<br>Total: <b>'+s.total.toLocaleString()+' PKR</b><br>Profit: '+s.profit+' PKR<br>Type: '+s.type+' - '+s.customer+'<br><small>'+s.date+'</small></p><button class="green" onclick="closeModal(\'receiptModal\')">Close</button></div>';openModal('receiptModal');}
+function clearSaleHistory(){if(confirm('Clear?')){sales=[];save();}}
+function shareApp(){window.open('https://wa.me/?text='+encodeURIComponent('🏪 KF DUKAN PRO APP - Stock + Sale + Udhaar + Profit - 10,000 PKR - WhatsApp 03027911041'));}
+function render(){
+document.getElementById('topShopName').innerText=shop.name;document.getElementById('topShopType').innerText=shop.type+' • KF Dukan Pro';
+let tSale=sales.reduce((a,s)=>a+s.total,0);let tProfit=sales.reduce((a,s)=>a+s.profit,0);let tUdhaar=customers.reduce((a,c)=>a+c.udhaar,0);
+document.getElementById('todaySale').innerText=tSale.toLocaleString()+' PKR';document.getElementById('todayProfit').innerText=tProfit.toLocaleString()+' PKR';document.getElementById('totalUdhaar').innerText=tUdhaar.toLocaleString()+' PKR';document.getElementById('totalStock').innerText=stock.length;document.getElementById('totalCust').innerText=customers.length;
+let sp=document.getElementById('saleProduct');sp.innerHTML='';stock.forEach((p,i)=>{let o=document.createElement('option');o.value=i;o.text=p.name+' - '+p.sell+' PKR ('+p.qty+' '+p.unit+')';sp.appendChild(o);});
+let sc=document.getElementById('saleCustomer');sc.innerHTML='<option value="">Cash Customer</option>';customers.forEach((c,i)=>{let o=document.createElement('option');o.value=i;o.text=c.name+' - Udhaar: '+c.udhaar;sc.appendChild(o);});
+let sl=document.getElementById('stockList');sl.innerHTML='';stock.forEach((p,i)=>{let d=document.createElement('div');d.className='item';d.innerHTML='<b>'+p.name+'</b> - Kharid: '+p.buy+' | Bechna: '+p.sell+' | Profit: '+(p.sell-p.buy)+'<br>Stock: <b>'+p.qty+' '+p.unit+'</b> '+(p.qty<=2?'<span style="color:red">⚠️ Khatam!</span>':'')+'<br><button class="btn" onclick="deleteStock('+i+')">🗑 Delete</button>';sl.appendChild(d);});
+let cl=document.getElementById('customerList');cl.innerHTML='';customers.forEach((c,i)=>{let d=document.createElement('div');d.className='item';d.innerHTML='<b>'+c.name+'</b> - '+c.phone+' - '+c.address+'<br>Udhaar: <b style="color:'+(c.udhaar>0?'red':'green')+'">'+c.udhaar.toLocaleString()+' PKR</b><br><button class="btn" onclick="payUdhaar('+i+')">💰 Paise Milye</button><button class="btn" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(\'Assalam-o-Alaikum '+c.name+', aapka udhaar '+c.udhaar+' PKR baqi hai. - '+shop.name))">WhatsApp Reminder</button><button class="btn" style="color:red;border-color:red" onclick="deleteCustomer('+i+')">🗑</button>';cl.appendChild(d);});
+let sh=document.getElementById('saleHistory');sh.innerHTML='';if(sales.length===0)sh.innerHTML='<p>Abhi koi sale nahi.</p>';sales.slice(0,20).forEach(s=>{sh.innerHTML+='<div class="item">🛒 '+s.item+' x '+s.qty+' = '+s.total.toLocaleString()+' PKR | Profit: '+s.profit+' | '+s.type+' - '+s.customer+'<br><small>'+s.date+'</small></div>';});
+}
+render();
+</script>
+</body>
+</html>
