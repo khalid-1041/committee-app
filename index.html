@@ -3,90 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KF Pro Business App - Committee + Dukan</title>
+<title>KF Dukan Pro - Shop Manager</title>
 <meta name="theme-color" content="#0A7A3A">
-<style>
-*{box-sizing:border-box;font-family:Arial,sans-serif}
-body{margin:0;background:#EEF5EE;padding-bottom:100px}
-.top{background:#0A7A3A;color:#fff;padding:16px;text-align:center;position:sticky;top:0;z-index:5}
-.top h2{margin:0}.top p{margin:4px 0 0;font-size:13px;opacity:.9}
-.card{background:#fff;margin:12px;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.green{background:#0A7A3A;color:#fff;border:none;padding:12px;border-radius:10px;width:100%;font-weight:bold;font-size:15px;margin-top:8px;cursor:pointer}
-.orange{background:#FF8A00}.yellow{background:#FFC107;color:#000}.red{background:#ff4444}.grey{background:#ddd;color:#000}
-.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
-.bar{height:16px;background:#FF8A00;border-radius:20px;overflow:hidden;display:flex}
-.bar div{background:#0A7A3A}
-.member,.item{padding:10px 0;border-bottom:1px solid #eee}
-.pill{padding:5px 10px;border-radius:8px;color:#fff;font-size:12px}
-.paid{background:#0A7A3A}.pending{background:#FF8A00}
-.btn{border:1px solid #0A7A3A;background:#fff;color:#0A7A3A;padding:6px 8px;border-radius:8px;font-size:12px;margin:2px;cursor:pointer}
-input,select{width:100%;padding:11px;border:1px solid #ddd;border-radius:8px;margin:6px 0}
-.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:12px;border-top:1px solid #ddd;z-index:10}
-.nav button{border:none;background:none;font-size:13px;font-weight:bold;cursor:pointer}
-.nav button.active{color:#0A7A3A}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;padding:20px;overflow:auto}
-.modalBox{background:#fff;border-radius:16px;padding:18px;max-width:420px;margin:40px auto}
-.flex{display:flex;gap:8px;flex-wrap:wrap}
-.countBox{background:linear-gradient(135deg,#0A7A3A,#25D366);color:#fff;border-radius:16px;padding:16px;text-align:center;margin:12px}
-.countNums{display:flex;justify-content:center;gap:10px;margin:12px 0}
-.countNums div{background:rgba(255,255,255,.2);border-radius:12px;padding:10px;min-width:62px}
-.countNums b{font-size:24px;display:block}
-.tabs{display:flex;background:#eee;border-radius:10px;padding:4px;margin:10px 0}
-.tabs button{flex:1;border:none;padding:10px;border-radius:8px;font-weight:bold;cursor:pointer}
-.tabs .active{background:#0A7A3A;color:#fff}
-.profitBox{background:#FFFBEA;border:2px solid #FFC107;border-radius:16px;padding:16px;margin:12px;text-align:center}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="top"><h2>KF PRO BUSINESS</h2><p>Committee + Dukan Manager • Khalid Farooq</p>
-<div class="tabs"><button id="tabComBtn" class="active" onclick="switchMain('committee')">👥 Committee</button><button id="tabShopBtn" onclick="switchMain('shop')">🏪 Dukan</button></div>
-</div>
+<div class="top"><h2>🏪 <span id="topShopName">Meri Dukan</span></h2><p id="topShopType">Kiryana Store • KF Dukan Pro</p></div>
 
-<!-- ============ COMMITTEE SECTION ============ -->
-<div id="committeeSec">
-<div class="card" style="text-align:center;border:2px solid #FFC107"><h3>🌟 Is Mahine Ki Committee</h3><h1 id="monthName">---</h1><p id="monthDetail"></p>
-<select id="monthSelect" onchange="setMonthWinner()"></select>
-<label>Committee Date:</label><input type="date" id="monthDateInput" onchange="setMonthDate()">
-</div>
-
-<div class="countBox"><h3>⏳ Committee Countdown</h3><p id="adminCommitteeDate"></p>
-<div class="countNums"><div><b id="adD">0</b><span>Din</span></div><div><b id="adH">0</b><span>Ghante</span></div><div><b id="adM">0</b><span>Minute</span></div><div><b id="adS">0</b><span>Second</span></div></div>
-<p id="adminCountdownMsg"></p></div>
-
-<div class="card"><h3>💰 Payment Summary</h3>
-<div class="row"><span>Total Pot</span><b id="totalPot"></b></div>
-<div class="row"><span>Collected</span><b style="color:#0A7A3A" id="collected"></b></div>
-<div class="row"><span>Pending</span><b style="color:#FF8A00" id="pendingAmt"></b></div>
-<div class="bar"><div id="barFill" style="width:75%"></div></div><p id="percentTxt"></p>
-<button class="green" onclick="openModal('payModal')">+ Add Payment</button>
-<button class="green orange" onclick="remindAll()">🔔 Remind All Pending</button>
-</div>
-
-<div class="card"><h3>Members Payment Status</h3>
-<button class="green" onclick="openModal('memberModal')">+ Add Member</button>
-<div id="memberList"></div></div>
-
-<div class="card"><h3>🕒 Payment History / Receipts</h3><div id="historyList"></div></div>
-</div>
-
-<!-- ============ SHOP SECTION ============ -->
-<div id="shopSec" style="display:none">
-<div class="profitBox"><h3>🏪 Aaj Ki Dukan - <span id="shopNameTxt">Meri Dukan</span></h3>
+<div class="profitBox"><h3>📊 Aaj Ka Hisab</h3>
 <div class="row"><span>Aaj Ki Sale</span><b id="todaySale">0 PKR</b></div>
 <div class="row"><span>Aaj Ka Profit</span><b style="color:#0A7A3A" id="todayProfit">0 PKR</b></div>
 <div class="row"><span>Total Udhaar (Khata)</span><b style="color:#ff4444" id="totalUdhaar">0 PKR</b></div>
 <div class="row"><span>Total Stock Items</span><b id="totalStock">0</b></div>
-<button class="green" onclick="openModal('settingsShopModal')">⚙️ Dukan Ka Naam / Type Badlo</button>
+<div class="row"><span>Total Customers</span><b id="totalCust">0</b></div>
+<button class="green" onclick="openModal('settingsModal')">⚙️ Dukan Ka Naam / Type Badlo</button>
 </div>
 
 <div class="card"><h3>🛒 Nayi Sale Karo</h3>
 <select id="saleProduct"></select>
-<input id="saleQty" type="number" value="1" placeholder="Kitni Quantity?">
+<input id="saleQty" type="number" value="1" placeholder="Quantity?">
 <select id="saleType"><option value="Cash">Cash - Nagad</option><option value="Udhaar">Udhaar - Khata Me</option><option value="JazzCash">JazzCash / Easypaisa</option></select>
 <select id="saleCustomer"></select>
 <button class="green" onclick="doSale()">✅ Sale Karo - Bill Banao</button>
-<p style="font-size:12px;color:#666">Udhaar select karne par ye paisa us customer ke khate me chala jayega.</p>
+<p style="font-size:12px;color:#666">Udhaar select karne par paisa us customer ke khate me chala jayega.</p>
 </div>
 
 <div class="card"><h3>📦 Stock / Samaam</h3>
@@ -97,102 +37,16 @@ input,select{width:100%;padding:11px;border:1px solid #ddd;border-radius:8px;mar
 <button class="green orange" onclick="openModal('customerModal')">+ Naya Customer Add Karo</button>
 <div id="customerList"></div></div>
 
-<div class="card"><h3>🧾 Aaj Ki Sale History</h3><div id="saleHistory"></div>
+<div class="card"><h3>🧾 Sale History</h3><div id="saleHistory"></div>
 <button class="green grey" onclick="clearSaleHistory()">Clear Sale History</button></div>
-</div>
 
-<div class="nav"><button onclick="alert('Home - Upar se Committee / Dukan select karo')">🏠 Home</button><button onclick="switchMain('committee')">👥 Committee</button><button onclick="switchMain('shop')">🏪 Dukan</button><button onclick="shareApp()">📤 Share / Becho</button></div>
-
-<!-- MODALS -->
-<div id="memberModal" class="modal"><div class="modalBox"><h3>+ Add Member</h3><input id="mName" placeholder="Member Name"><input id="mDraw" type="number" placeholder="Draw No"><input id="mPhone" placeholder="Phone / WhatsApp"><input type="date" id="mDate"><button class="green" onclick="addMember()">Save Member</button><button class="green grey" onclick="closeModal('memberModal')">Cancel</button></div></div>
-<div id="payModal" class="modal"><div class="modalBox"><h3>+ Add Payment</h3><select id="payMember"></select><input id="payAmount" type="number" value="10000"><select id="payMonth"><option>December 2026</option><option>January 2027</option><option>February 2027</option></select><select id="payMethod"><option>JazzCash</option><option>Easypaisa</option><option>Bank Transfer</option><option>Cash</option></select><button class="green" onclick="addPayment()">Mark Paid + Receipt</button><button class="green grey" onclick="closeModal('payModal')">Cancel</button></div></div>
+<div class="nav"><button>🏠 Home</button><button onclick="document.querySelector('.profitBox').scrollIntoView({behavior:'smooth'})">📊 Hisab</button><button onclick="shareApp()">📤 Share / Becho</button></div>
 
 <div id="stockModal" class="modal"><div class="modalBox"><h3>+ Naya Samaam</h3><input id="sName" placeholder="Samaam Ka Naam - jaise Cheeni, Daal, Shirt"><input id="sBuy" type="number" placeholder="Kharid Price - Kitne me liya?"><input id="sSell" type="number" placeholder="Bechne Wali Price"><input id="sQty" type="number" placeholder="Quantity - Kitna hai?"><select id="sUnit"><option>Piece</option><option>Kg</option><option>Litre</option><option>Packet</option><option>Meter</option><option>Dabba</option></select><button class="green" onclick="addStock()">Save Samaam</button><button class="green grey" onclick="closeModal('stockModal')">Cancel</button></div></div>
 <div id="customerModal" class="modal"><div class="modalBox"><h3>+ Naya Customer</h3><input id="cName" placeholder="Customer Ka Naam"><input id="cPhone" placeholder="Phone / WhatsApp"><input id="cAddress" placeholder="Address / Mohalla"><button class="green" onclick="addCustomer()">Save Customer</button><button class="green grey" onclick="closeModal('customerModal')">Cancel</button></div></div>
-<div id="settingsShopModal" class="modal"><div class="modalBox"><h3>⚙️ Dukan Settings</h3><input id="shopNameInput" placeholder="Dukan Ka Naam"><select id="shopTypeInput"><option>Kiryana Store</option><option>Kapra / Cloth Shop</option><option>Mobile Shop</option><option>Cosmetic Shop</option><option>Hardware / Electric</option><option>General Store</option><option>Other</option></select><button class="green" onclick="saveShopSettings()">Save</button><button class="green grey" onclick="closeModal('settingsShopModal')">Cancel</button></div></div>
+<div id="settingsModal" class="modal"><div class="modalBox"><h3>⚙️ Dukan Settings</h3><input id="shopNameInput" placeholder="Dukan Ka Naam"><select id="shopTypeInput"><option>Kiryana Store</option><option>Kapra / Cloth Shop</option><option>Mobile Shop</option><option>Cosmetic Shop</option><option>Hardware / Electric</option><option>General Store</option><option>Other</option></select><button class="green" onclick="saveShopSettings()">Save</button><button class="green grey" onclick="closeModal('settingsModal')">Cancel</button></div></div>
 <div id="receiptModal" class="modal"><div class="modalBox" id="receiptBox"></div></div>
 
-<script>
-let PIN='1234';
-function defaultDateForDraw(draw){let now=new Date();let d=new Date(now.getFullYear(),draw-1,5,17,0,0);if(d<now)d.setFullYear(now.getFullYear()+1);return d.toISOString().slice(0,10);}
-let members=JSON.parse(localStorage.getItem('kf_members'))||[
-{name:"Khalid Farooq",draw:1,status:"Paid",phone:"0300-1234567",cDate:defaultDateForDraw(1)},
-{name:"Ali Khan",draw:2,status:"Paid",phone:"",cDate:defaultDateForDraw(2)},
-{name:"Bilal Ahmed",draw:3,status:"Pending",phone:"",cDate:defaultDateForDraw(3)}];
-let history=JSON.parse(localStorage.getItem('kf_history'))||[];
-let monthWinner=JSON.parse(localStorage.getItem('kf_monthWinner'))||members[0];
-let monthDate=localStorage.getItem('kf_monthDate')||new Date(new Date().getFullYear(),new Date().getMonth(),5).toISOString().slice(0,10);
-
-// SHOP DATA
-let shop=JSON.parse(localStorage.getItem('kf_shop'))||{name:"Meri Dukan",type:"Kiryana Store"};
-let stock=JSON.parse(localStorage.getItem('kf_stock'))||[
-{name:"Cheeni",buy:170,sell:190,qty:20,unit:"Kg"},
-{name:"Daal",buy:280,sell:320,qty:15,unit:"Kg"},
-{name:"Surf",buy:180,sell:220,qty:10,unit:"Packet"}];
-let customers=JSON.parse(localStorage.getItem('kf_customers'))||[
-{name:"Ahmed Bhai",phone:"0300-1111111",address:"Main Bazar",udhaar:0},
-{name:"Usman",phone:"0300-2222222",address:"Street 2",udhaar:0}];
-let sales=JSON.parse(localStorage.getItem('kf_sales'))||[];
-
-function save(){localStorage.setItem('kf_members',JSON.stringify(members));localStorage.setItem('kf_history',JSON.stringify(history));localStorage.setItem('kf_monthWinner',JSON.stringify(monthWinner));localStorage.setItem('kf_monthDate',monthDate);localStorage.setItem('kf_shop',JSON.stringify(shop));localStorage.setItem('kf_stock',JSON.stringify(stock));localStorage.setItem('kf_customers',JSON.stringify(customers));localStorage.setItem('kf_sales',JSON.stringify(sales));render();}
-function switchMain(t){document.getElementById('committeeSec').style.display=t==='committee'?'block':'none';document.getElementById('shopSec').style.display=t==='shop'?'block':'none';document.getElementById('tabComBtn').className=t==='committee'?'active':'';document.getElementById('tabShopBtn').className=t==='shop'?'active':'';render();}
-function openModal(id){document.getElementById(id).style.display='block'}
-function closeModal(id){document.getElementById(id).style.display='none'}
-
-
-// COMMITTEE
-function getCountdown(s){let target=new Date(s+'T17:00:00');let now=new Date();let diff=target-now;if(diff<=0&&diff>-86400000)return{isToday:true,d:0,h:0,m:0,s:0};if(diff<0)return{isPast:true,d:0,h:0,m:0,s:0};return{d:Math.floor(diff/86400000),h:Math.floor((diff%86400000)/3600000),m:Math.floor((diff%3600000)/60000),s:Math.floor((diff%60000)/1000)};}
-function updateCountdown(){let c=getCountdown(monthDate);document.getElementById('adminCommitteeDate').innerText='Committee: '+monthWinner.name+' - '+monthDate;if(c.isToday)document.getElementById('adminCountdownMsg').innerText='🎉 AAJ COMMITTEE HAI!';else if(c.isPast)document.getElementById('adminCountdownMsg').innerText='Date guzar gayi.';else{document.getElementById('adD').innerText=c.d;document.getElementById('adH').innerText=c.h;document.getElementById('adM').innerText=c.m;document.getElementById('adS').innerText=c.s;document.getElementById('adminCountdownMsg').innerText=monthWinner.name+' ki committee me '+c.d+' din baaqi.';}}
-setInterval(updateCountdown,1000);
-function setMonthWinner(){let v=document.getElementById('monthSelect').value;if(v==='')return;monthWinner=members[v];monthDate=members[v].cDate||monthDate;save();}
-function setMonthDate(){monthDate=document.getElementById('monthDateInput').value;save();}
-function addMember(){let n=document.getElementById('mName').value.trim();let d=document.getElementById('mDraw').value;if(!n||!d){alert('Name aur Draw zaroori');return}members.push({name:n,draw:parseInt(d),status:"Pending",phone:document.getElementById('mPhone').value,cDate:document.getElementById('mDate').value||defaultDateForDraw(parseInt(d))});save();closeModal('memberModal');}
-function addPayment(){let i=document.getElementById('payMember').value;let amt=parseInt(document.getElementById('payAmount').value)||10000;let month=document.getElementById('payMonth').value;let method=document.getElementById('payMethod').value;members[i].status='Paid';history.push({member:members[i].name,amount:amt,month:month,method:method,date:new Date().toLocaleString()});save();closeModal('payModal');showReceipt(history.length-1);}
-function showReceipt(idx){let h=history[idx];document.getElementById('receiptBox').innerHTML='<div style="text-align:center"><h2>🧾 Receipt</h2><p>'+h.member+'<br>Amount: '+h.amount.toLocaleString()+' PKR<br>Month: '+h.month+'<br>Via: '+h.method+'<br>'+h.date+'<br>Status: ✅ PAID</p><button class="green" onclick="closeModal(\'receiptModal\')">Close</button></div>';openModal('receiptModal');}
-function remindAll(){let p=members.filter(m=>m.status==='Pending');window.open('https://wa.me/?text='+encodeURIComponent('⏰ Committee Reminder - Payment 10,000 PKR pending hai. - Khalid Farooq'));alert(p.length+' pending members ko reminder!');}
-function markPaid(i){members[i].status='Paid';save();}
-function markPending(i){members[i].status='Pending';save();}
-function deleteMember(i){if(confirm('Delete karna hai?')){members.splice(i,1);save();}}
-
-// SHOP
-function saveShopSettings(){shop.name=document.getElementById('shopNameInput').value||shop.name;shop.type=document.getElementById('shopTypeInput').value;save();closeModal('settingsShopModal');}
-function addStock(){let n=document.getElementById('sName').value.trim();let b=parseInt(document.getElementById('sBuy').value)||0;let s=parseInt(document.getElementById('sSell').value)||0;let q=parseInt(document.getElementById('sQty').value)||0;if(!n){alert('Naam likho');return}stock.push({name:n,buy:b,sell:s,qty:q,unit:document.getElementById('sUnit').value});save();closeModal('stockModal');}
-function deleteStock(i){if(confirm('Delete?')){stock.splice(i,1);save();}}
-function addCustomer(){let n=document.getElementById('cName').value.trim();if(!n){alert('Naam likho');return}customers.push({name:n,phone:document.getElementById('cPhone').value,address:document.getElementById('cAddress').value,udhaar:0});save();closeModal('customerModal');}
-function payUdhaar(i){let amt=parseInt(prompt(customers[i].name+' ne kitne paise diye? Udhaar: '+customers[i].udhaar))||0;if(amt>0){customers[i].udhaar=Math.max(0,customers[i].udhaar-amt);save();alert('Shukriya! Baqi udhaar: '+customers[i].udhaar);}}
-function deleteCustomer(i){if(confirm('Delete?')){customers.splice(i,1);save();}}
-function doSale(){
-let pi=document.getElementById('saleProduct').value;if(pi===''){alert('Pehle samaam select karo');return}
-let p=stock[pi];let qty=parseInt(document.getElementById('saleQty').value)||1;if(qty>p.qty){alert('Stock me sirf '+p.qty+' hai!');return}
-let type=document.getElementById('saleType').value;let ci=document.getElementById('saleCustomer').value;
-let total=p.sell*qty;let profit=(p.sell-p.buy)*qty;
-p.qty-=qty;
-if(type==='Udhaar'){if(ci===''){alert('Udhaar ke liye customer select karo');p.qty+=qty;return}customers[ci].udhaar+=total;}
-sales.unshift({item:p.name,qty:qty,total:total,profit:profit,type:type,customer:ci!==''?customers[ci].name:'Cash Customer',date:new Date().toLocaleString()});
-save();alert('✅ Sale Ho Gayi!\n'+p.name+' x '+qty+' = '+total+' PKR\nProfit: '+profit+' PKR');
-}
-function clearSaleHistory(){if(confirm('Sale history clear?')){sales=[];save();}}
-function shareApp(){window.open('https://wa.me/?text='+encodeURIComponent('🏪 KF PRO BUSINESS APP\nCommittee + Dukan dono ek app me!\nPrice: Sirf 10,000 PKR\nOrder ke liye rabta karein: Khalid Farooq'));}
-function render(){
-document.getElementById('monthName').innerText='🏆 '+monthWinner.name;document.getElementById('monthDetail').innerText='Draw #'+monthWinner.draw+' - Pot: '+(members.length*10000).toLocaleString()+' PKR - Date: '+monthDate;document.getElementById('monthDateInput').value=monthDate;
-let ms=document.getElementById('monthSelect');ms.innerHTML='<option value="">-- Member Select Karo --</option>';members.forEach((m,i)=>{let o=document.createElement('option');o.value=i;o.text=m.name+' - Draw #'+m.draw;if(m.name===monthWinner.name)o.selected=true;ms.appendChild(o);});
-let paid=members.filter(m=>m.status==='Paid').length;let total=members.length*10000;let coll=paid*10000;let pend=total-coll;let pct=total?Math.round(coll/total*100):0;
-document.getElementById('totalPot').innerText=total.toLocaleString()+' PKR';document.getElementById('collected').innerText=coll.toLocaleString()+' PKR';document.getElementById('pendingAmt').innerText=pend.toLocaleString()+' PKR';document.getElementById('barFill').style.width=pct+'%';document.getElementById('percentTxt').innerText='Collected '+pct+'%';
-let list=document.getElementById('memberList');list.innerHTML='';let sel=document.getElementById('payMember');sel.innerHTML='';
-members.forEach((m,i)=>{let div=document.createElement('div');div.className='member';div.innerHTML='<b>'+m.name+'</b> • Draw #'+m.draw+'<br><span class="pill '+(m.status==='Paid'?'paid':'pending')+'">'+m.status+'</span> <button class="btn" onclick="markPaid('+i+')">✓ Paid</button><button class="btn" onclick="markPending('+i+')">↩ Pending</button><button class="btn" style="color:red;border-color:red" onclick="deleteMember('+i+')">🗑</button>';list.appendChild(div);let o=document.createElement('option');o.value=i;o.text=m.name+' - Draw #'+m.draw;sel.appendChild(o);});
-let hList=document.getElementById('historyList');hList.innerHTML='';if(history.length===0)hList.innerHTML='<p>Koi history nahi.</p>';history.slice().reverse().forEach((h,idx)=>{hList.innerHTML+='<div class="item">🧾 '+h.member+' - '+h.amount.toLocaleString()+' PKR - '+h.month+' - '+h.method+'</div>';});
-// SHOP RENDER
-document.getElementById('shopNameTxt').innerText=shop.name+' ('+shop.type+')';
-let tSale=sales.reduce((a,s)=>a+s.total,0);let tProfit=sales.reduce((a,s)=>a+s.profit,0);let tUdhaar=customers.reduce((a,c)=>a+c.udhaar,0);
-document.getElementById('todaySale').innerText=tSale.toLocaleString()+' PKR';document.getElementById('todayProfit').innerText=tProfit.toLocaleString()+' PKR';document.getElementById('totalUdhaar').innerText=tUdhaar.toLocaleString()+' PKR';document.getElementById('totalStock').innerText=stock.length;
-let sp=document.getElementById('saleProduct');sp.innerHTML='';stock.forEach((p,i)=>{let o=document.createElement('option');o.value=i;o.text=p.name+' - '+p.sell+' PKR ('+p.qty+' '+p.unit+')';sp.appendChild(o);});
-let sc=document.getElementById('saleCustomer');sc.innerHTML='<option value="">Cash Customer</option>';customers.forEach((c,i)=>{let o=document.createElement('option');o.value=i;o.text=c.name+' - Udhaar: '+c.udhaar;sc.appendChild(o);});
-let sl=document.getElementById('stockList');sl.innerHTML='';if(stock.length===0)sl.innerHTML='<p>Stock khaali hai.</p>';stock.forEach((p,i)=>{let d=document.createElement('div');d.className='item';d.innerHTML='<b>'+p.name+'</b> - Kharid: '+p.buy+' | Bechna: '+p.sell+' | Profit: '+(p.sell-p.buy)+'<br>Stock: <b>'+p.qty+' '+p.unit+'</b> '+(p.qty<=2?'<span style="color:red">⚠️ Khatam hone wala!</span>':'')+'<br><button class="btn" onclick="deleteStock('+i+')">🗑 Delete</button>';sl.appendChild(d);});
-let cl=document.getElementById('customerList');cl.innerHTML='';customers.forEach((c,i)=>{let d=document.createElement('div');d.className='item';d.innerHTML='<b>'+c.name+'</b> - '+c.phone+' - '+c.address+'<br>Udhaar: <b style="color:'+(c.udhaar>0?'red':'green')+'">'+c.udhaar.toLocaleString()+' PKR</b><br><button class="btn" onclick="payUdhaar('+i+')">💰 Paise Milye</button><button class="btn" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(\'Assalam-o-Alaikum '+c.name+', aapka udhaar '+c.udhaar+' PKR baqi hai. - '+shop.name))">WhatsApp Reminder</button><button class="btn" style="color:red;border-color:red" onclick="deleteCustomer('+i+')">🗑</button>';cl.appendChild(d);});
-let sh=document.getElementById('saleHistory');sh.innerHTML='';if(sales.length===0)sh.innerHTML='<p>Abhi koi sale nahi.</p>';sales.slice(0,20).forEach(s=>{sh.innerHTML+='<div class="item">🛒 '+s.item+' x '+s.qty+' = '+s.total.toLocaleString()+' PKR | Profit: '+s.profit+' | '+s.type+' - '+s.customer+'<br><small>'+s.date+'</small></div>';});
-updateCountdown();
-}
-render();
-</script>
+<script src="script.js"></script>
 </body>
 </html>
